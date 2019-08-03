@@ -1,51 +1,117 @@
 ---
-title: "Presentation Ninja"
-subtitle: "⚔<br/>with xaringan"
+title: "Workflows: Likert Scale Survey"
+subtitle: "From google form to graph"
 author: "Emma Rand"
 institute: "University of York"
 date: "updated: `r Sys.Date()`"
 output:
   xaringan::moon_reader:
+    css: [metropolis, metropolis-fonts]
     lib_dir: libs
     nature:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+
 ---
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE,	
+                      warning = FALSE)
 options(htmltools.dir.version = FALSE)
 ```
 
----
-class: center, middle
+
+```{r pkgs, include=FALSE}
+library(RefManageR)
+library(kableExtra)
+library(dplyr)
+```
+
+```{r, load-refs, include=FALSE, cache=FALSE}
+BibOptions(check.entries = FALSE,
+           bib.style = "numeric",
+           cite.style = "authoryear",
+           style = "markdown",
+           hyperlink = FALSE,
+           dashed = FALSE)
+myBib <- ReadBib("bibliography.bib", check = FALSE)
+```
 
 
-# Workflow for setting up and reporting a Likert survey
-
----
 
 # Introduction
 
+This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert `r Cite(myBib, "likert1932technique")` scale quesions, read in the responses to R and report on the results.
+
+--
+
+A Likert scale question asks people to respond to a series of statements in terms of the extent to which they agree with them.
+
+```{r eg-data, include=FALSE}
+df <- data.frame("Strongly disagree" = c("o","o","o","o"),
+                 "Disagree" = c("o","o","o","o"),
+                 "Neither agree nor disagree" = c("o","o","o","o"),
+                 "Agree" = c("o","o","o","o"),
+                 "Strongly agree" = c("o","o","o","o"),
+                 row.names = c("Blue is a great colour",
+                               "Green is a great colour",
+                               "Purple is a great colour",
+                               "Yellow is a great colour"),
+                 check.names = F)
+```
+
+```{r eg-tab, echo=FALSE}
+df %>% 
+  knitr::kable(caption = "To what extent do you agree with the following:",
+               escape = FALSE,
+               align = "c") %>%
+  kable_styling(bootstrap_options = c("striped", "condensed"),
+                font_size = 12) %>%
+  column_spec(1:5, width = "3cm")
+```
 
 
 ---
 # Workflow | Ingredients
 
 You will need:
+
 * a google account
 * R and RStudio
+
+This workflow assumes you have a little familiarity with using these.
 
 ---
 # Workflow | Steps
 
 ## Setting up the survey
 
-
+Go to [Forms](https://docs.google.com/forms/u/0/?tgif=d) and start a new form.
 ---
 # Workflow | Steps
 
 ## Getting ready in R
+
+You will need these packages:
+
+* `googlesheets` `r Cite(myBib, "bryan_and_zhoa")`
+* `likert` `r Cite(myBib, "Bryer_and_Speerschneider")`
+
+Install these as follows:
+
+```{r eval=FALSE}
+install.packages("googlesheets")
+install.packages("likert")
+```
+
+Then load them into R for use:
+
+```{r}
+library(googlesheets)
+library(likert)
+```
 
 
 ---
@@ -56,3 +122,9 @@ You will need:
 
 
 
+---
+# References
+
+```{r refs, echo=FALSE, results="asis"}
+PrintBibliography(myBib)
+```

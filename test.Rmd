@@ -1,0 +1,25 @@
+---
+title: "test"
+author: "Emma Rand"
+date: "03/08/2019"
+output: html_document
+---
+
+
+```{r, load_refs, include=FALSE, cache=FALSE}
+library(RefManageR)
+bib <- ReadBib(system.file("Bib", 
+                           "biblatexExamples.bib", 
+                           package = "RefManageR"),
+               check = FALSE)
+BibOptions(check.entries = FALSE, 
+           style = "markdown", 
+           bib.style = "alphabetic",
+           cite.style = 'authoryear')
+```
+
+This is an R Markdown document. This is an example of a citation in the text `r Citet(bib, 12, .opts = list(longnamesfirst = FALSE))`. 
+
+Now we cite in parentheses `r AutoCite(bib, "baez/online", before = "e.g., ")`. You can change the default options in a setup chunk at the start of the document or at any other point using the BibOptions function or by specifying options as a list in the .opts argument to the cite functions.
+
+These are reports `r Citet(bib, bibtype = "Report", .opts = list(hyperlink = "to.doc", super = TRUE))`. Their hyperlinks go to their entry in the bibliography. The link for `r AutoCite(bib, "markey")` will take you to the document in a new window; this is the default behaviour, if a link is available (see ?open.BibEntry). The following citation has no hyperlink `r AutoCite(bib, location = "Uppsala", .opts = list(hyperlink = FALSE))`
