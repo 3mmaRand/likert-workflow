@@ -1,0 +1,58 @@
+---
+title: "Presentation Ninja"
+subtitle: "⚔<br/>with xaringan"
+author: "Emma Rand"
+institute: "University of York"
+date: "updated: `r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+class: center, middle
+
+
+# Workflow for setting up and reporting a Likert survey
+
+---
+
+# Introduction
+
+
+
+---
+# Workflow | Ingredients
+
+You will need:
+* a google account
+* R and RStudio
+
+---
+# Workflow | Steps
+
+## Setting up the survey
+
+
+---
+# Workflow | Steps
+
+## Getting ready in R
+
+
+---
+# Workflow | Steps
+
+## Reading in the data
+
+
+
+

@@ -1,2 +1,7 @@
-# likert-workflow
-workflow for creating a google likert survey, pulling the data in to R and plotting
+# Workflow for setting up and reporting a Likert survey
+
+## Introduction
+
+## Workflow
+
+[Slideshow](https://3mmarand.github.io/likert-workflow/#1)
