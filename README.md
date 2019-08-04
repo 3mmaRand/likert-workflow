@@ -5,11 +5,10 @@
 
 This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert scale quesions, read the responses in to R and report on the results.
 
-It uses [googlesheets](https://cran.r-project.org/web/packages/googlesheets/googlesheets.pdf), [likert](https://cran.r-project.org/web/packages/likert/likert.pdf), 
+It uses [googlesheets](https://cran.r-project.org/web/packages/googlesheets/googlesheets.pdf) (Bryan and Zhao, 2018) and  [likert](https://cran.r-project.org/web/packages/likert/likert.pdf) (Bryer and Speerschneider, 2016).
 
 ## Workflow
-
-[Slideshow](https://3mmarand.github.io/likert-workflow/#1)
+These [slides](https://3mmarand.github.io/likert-workflow/#1) take you through the process.
 
 
 <br>
