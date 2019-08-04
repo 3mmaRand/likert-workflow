@@ -33,7 +33,7 @@ class: center, middle, inverse, title-slide
 
 # Introduction
 
-This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert (Likert, 1932) scale quesions, read the responses in to R and report on the results.
+This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert (Likert, 1932) scale questions, read the responses in to R and report on the results.
 
 --
 
@@ -90,6 +90,18 @@ A Likert scale question asks people to respond to a series of statements in term
 &lt;/table&gt;
 
 
+A list of similar answers is usefully listed on [Simply Psychology](https://www.simplypsychology.org/likert-scale.html) (Mcleod, 2008)
+
+
+---
+# Introduction | Why?
+
+By scripting the process of reading your data directly from the record of responses and plotting it, you can examine your results at any point during the survey. 
+
+If you decide to extend the deadline or receive additional responses you can create new summaries and plots in minutes just by rerunning the script.
+
+You'll have just one copy of your data avoiding potential update anomalies.
+
 ---
 # Workflow | Ingredients
 
@@ -100,19 +112,29 @@ You will need:
 
 This workflow assumes you have a little familiarity with using these.
 
----
-# Workflow | Steps
+The steps required are
 
-## Setting up the survey
+* Set up Googleform
+* Get R ready
+* Create response googlesheet
+* Read in data
+* Format data
+* Summarise data
+* Plot data
+
+---
+# Workflow | Set up Googleform
+
+## Create form
 
 Go to [Forms](https://docs.google.com/forms/u/0/?tgif=d) and start a new blank form.
 
 ![google forms home page with windows hand icon hovering over create new blank form](pics/gform_new.png)
 
 ---
-# Workflow | Steps
+# Workflow | Set up Googleform
 
-## Setting up the survey
+## Add question
 
 .pull-left[
 Give your form a name - I used the name 'colours'.
@@ -124,9 +146,9 @@ Choose the style of question called 'Multiple choice grid'
 ]
 
 ---
-# Workflow | Steps
+# Workflow | Set up Googleform
 
-## Setting up the survey
+## Add question options
 
 .pull-left[
 Add your answer options as Columns. For example:
@@ -147,30 +169,32 @@ Add your statements as Rows. For example:
 ![google form Multiple choice grid with Columns and rows added as described](pics/gform_question_with_options.png)
 ]
 ---
-# Workflow | Steps
-
-## Responding to the survey
+# Workflow | Set up Googleform
 
 The survey is ready.
 
 .pull-left[
-Preview it 
+## Preview it 
 ![google form preview survey button highlighted](pics/gform_preview.png)
 ]
+
 --
 .pull-right[
+
+## Respond
 Submit several responses. You will need responses to plot later.
 ![google survey showing a response](pics/gform_respond.png)
 
 ]
 ---
-# Workflow | Steps
+# Workflow | Get R ready
 
-## Getting ready in R
+## Packages needed
 
 You will need these packages:
 
 * `googlesheets` (Bryan and Zhao, 2018)
+* `dplyr` (Wickham, François, Henry, and Müller, 2019)
 * `likert` (Bryer and Speerschneider, 2016)
 
 Install these as follows:
@@ -178,27 +202,282 @@ Install these as follows:
 
 ```r
 install.packages("googlesheets")
+install.packages("dplyr")
 install.packages("likert")
 ```
+
+Additional packages may also be installed if you do not have them on your system.
 
 Then load them into R for use:
 
 
 ```r
 library(googlesheets)
+library(dplyr)
 library(likert)
+```
+
+You don't need to worry about the warnings
+
+---
+# Workflow | Create response gsheet
+
+## Create
+
+You read the data from a googlesheet generated from from the form.
+
+Go back to the survey editor, click on Responses and click on the Googlesheet icon to create a googlesheet of the responses.
+![google survey showing the creae googlesheet icon](pics/gform_response_create.png)
+
+**Note the title of your googlesheet. In my case this is: "colours (Responses)"**
+
+---
+# Workflow | Read in data
+
+## Register the sheet for use
+
+You need to register the sheet for use with `gs_title()`. 
+Your googlesheet may have a different name!
+
+```r
+colours &lt;- gs_title("colours (Responses)")
+```
+
+This will open a browser to ask you to allow the googlesheets package access your googlesheets. Choose Allow.
+
+## Read in data
+
+
+```r
+coloursurvey &lt;- gs_read(colours)
+```
+
+---
+# Workflow | Read in data
+
+## Understand data format
+
+`gs_read()` creates a tibble (a data structure similar to a dataframe). It has a column for each of the questions and one for time of the response and the email of the responder (unless you make the form anonymous).
+
+
+&lt;table class="table" style="font-size: 11px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Timestamp &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Email Address &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Blue is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Green is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Purple is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Yellow is a great colour] &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; 8/4/2019 9:32:18 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; emma.rand@york.ac.uk &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Strongly disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; 8/4/2019 9:32:33 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; emma.rand@york.ac.uk &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Strongly agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Disagree &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; 8/4/2019 9:32:47 &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; emma.rand@york.ac.uk &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+We won't need the first two columns.
+
+---
+# Workflow | Format data
+
+To use the `likert` package on our data, we need to 1. convert the tibble to a dataframe and 2. format our columns
+
+## 1. Convert to dataframe
+
+`coloursurvey[-(1:2)` drops the first two columns.
+
+The `check.names = FALSE` argument means the spaces in the questions (column names) are retained.
+
+
+```r
+coloursurveydf &lt;- data.frame(coloursurvey[-(1:2)], 
+                           check.names = FALSE)
+```
+
+&lt;table class="table" style="font-size: 11px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Blue is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Green is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Purple is a great colour] &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Untitled Question [Yellow is a great colour] &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Strongly disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Strongly agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Disagree &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Agree &lt;/td&gt;
+   &lt;td style="text-align:left;width: 2.5cm; "&gt; Neither agree nor disagree &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Workflow | Format data
+
+## 2. Format the columns
+We need to a) change the column names b) make them factor variables with the levels in a useful order (from Strongly disagree to Strongly agree).
+
+### a) Change column names
+
+We **sub**stitute the part of the name in `pattern` with  `replacement`. In this case the replacement is an empty string, `""`. The `\\` is because `[` and `]` are characters with special meanings in patterns and we need to indicate they should be treated just as the character without its special meaning.
+
+```r
+names(coloursurveydf) &lt;- names(coloursurveydf) %&gt;% 
+  sub(pattern = "Untitled Question \\[*", replacement = "") %&gt;% 
+  sub(pattern = "\\]", replacement = "")
+```
+
+---
+# Workflow | Format data
+
+## 2. Format the columns
+
+### a) Turn in to factors with the levels in useful order
+
+Create a variable to hold the levels in order to make later code easier to write and read.
+
+```r
+my_levels &lt;- c("Strongly disagree",
+               "Disagree",
+               "Neither agree nor disagree",
+               "Agree",
+               "Strongly agree")
+```
+---
+# Workflow | Format data
+
+## 2. Format the columns
+
+### a) Turn in to factors with the levels in useful order
+
+You must put back ticks around column names with spaces.
+
+
+```r
+coloursurveydf &lt;- coloursurveydf %&gt;% 
+  mutate(`Blue is a great colour` = factor(`Blue is a great colour`,
+                                           levels = my_levels),
+         `Green is a great colour` = factor(`Green is a great colour`,
+                                            levels = my_levels),
+         `Purple is a great colour` = factor(`Purple is a great colour`,
+                                             levels = my_levels),
+         `Yellow is a great colour` = factor(`Yellow is a great colour`,
+                                             levels = my_levels))
+```
+
+---
+# Workflow | Summarise data
+
+The `likert()` function generates a summary of the data which gives the percentage of answers in the disagree, agree or neutral categories. In addition it gives the mean response with standard deviation using numeric values 1 to 5 for Strongly disagree to Strongly agree.
+
+
+```r
+colsummary &lt;- likert(coloursurveydf)
+summary(colsummary)
+```
+
+```
+##                       Item      low  neutral     high     mean        sd
+## 1   Blue is a great colour 22.22222 11.11111 66.66667 3.666667 1.4142136
+## 2  Green is a great colour 11.11111 33.33333 55.55556 3.888889 1.1666667
+## 4 Yellow is a great colour 11.11111 33.33333 55.55556 3.555556 0.8819171
+## 3 Purple is a great colour 22.22222 44.44444 33.33333 3.111111 0.7817360
 ```
 
 
 ---
-# Workflow | Steps
+# Workflow | Plot data
 
-## Reading in the data
+A default plot can be obtained with:
 
 
+```r
+plot(colsummary)
+```
 
+![](index_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
 
 ---
+# Workflow | Plot data
+
+Some options to modify the plot include: moving the legend and losing its title and changing the text size and colours.
+
+
+```r
+p &lt;- plot(colsummary,
+     legend.position = "top",
+     legend = "",
+     text.size = 4,
+     low.color = "lightblue",
+     high.col = "lightgreen")
+p
+```
+
+![](index_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+---
+# Workflow | Plot data
+
+In addition, since the likert package uses `ggplot`, you can add other ggplot items. 
+For example, change all the text size with `theme()`
+
+
+```r
+p + theme(text = element_text(size = 15)) 
+```
+
+![](index_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
+
+---
+# Where to go from here
+The package has other options for centring the data differently, ordering the questions and so on. 
+
+You can see some of the options using 
+
+```r
+demo('likert', package='likert')
+```
+
+Also take a look at Jason Bryer's [Project on github](https://github.com/jbryer/likert)
+---
+
 # References
 
 [1] J. Bryan and J. Zhao. _googlesheets: Manage Google
@@ -211,6 +490,16 @@ Visualization Likert Items_. R package version 1.3.5. 2016. URL:
 
 [3] R. Likert. "A technique for the measurement of attitudes." In:
 _Archives of psychology_ (1932).
+
+[4] S. Mcleod. _Likert Scale | Simply Psychology_. &lt;URL:
+https://www.simplypsychology.org/likert-scale.html&gt;. Accessed:
+2019-8-4. 2008.
+
+[5] H. Wickham, R. François, L. Henry, et al. _dplyr: A Grammar of
+Data Manipulation_. R package version 0.8.3. 2019. URL:
+[https://CRAN.R-project.org/package=dplyr](https://CRAN.R-project.org/package=dplyr).
+
+&lt;a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"&gt;&lt;img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /&gt;&lt;/a&gt;&lt;br /&gt;&lt;span xmlns:dct="http://purl.org/dc/terms/" property="dct:title"&gt;Workflows: Likert Scale Survey. From google form to graph.&lt;/span&gt; by &lt;span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName"&gt;Emma Rand&lt;/span&gt; is licensed under a &lt;a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"&gt;Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License&lt;/a&gt;.
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
