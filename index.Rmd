@@ -6,7 +6,7 @@ institute: "University of York"
 date: "updated: `r Sys.Date()`"
 output:
   xaringan::moon_reader:
-    css: [metropolis, metropolis-fonts]
+    css: [metropolis, default, metropolis-fonts]
     lib_dir: libs
     nature:
       highlightStyle: github
@@ -43,7 +43,7 @@ myBib <- ReadBib("bibliography.bib", check = FALSE)
 
 # Introduction
 
-This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert `r Cite(myBib, "likert1932technique")` scale quesions, read in the responses to R and report on the results.
+This workflow will teach you how to set up [Google Forms](https://docs.google.com/forms/u/0/?tgif=d) survey with Likert `r Cite(myBib, "likert1932technique")` scale quesions, read the responses in to R and report on the results.
 
 --
 
@@ -88,7 +88,64 @@ This workflow assumes you have a little familiarity with using these.
 
 ## Setting up the survey
 
-Go to [Forms](https://docs.google.com/forms/u/0/?tgif=d) and start a new form.
+Go to [Forms](https://docs.google.com/forms/u/0/?tgif=d) and start a new blank form.
+
+![google forms home page with windows hand icon hovering over create new blank form](pics/gform_new.png)
+
+---
+# Workflow | Steps
+
+## Setting up the survey
+
+.pull-left[
+Give your form a name - I used the name 'colours'.
+
+Choose the style of question called 'Multiple choice grid'
+]
+.pull-right[
+![google form called colours showing question style menu and with Multiple choice grid selected](pics/gform_question.png)
+]
+
+---
+# Workflow | Steps
+
+## Setting up the survey
+
+.pull-left[
+Add your answer options as Columns. For example:
+* Strongly disagree
+* Disagree
+* Neither agree nor disagree
+* Agree
+* Strongly agree
+
+Add your statements as Rows. For example:
+* Blue is a great colour
+* Green is a great colour
+* Purple is a great colour
+* Yellow is a great colour
+
+]
+.pull-right[
+![google form Multiple choice grid with Columns and rows added as described](pics/gform_question_with_options.png)
+]
+---
+# Workflow | Steps
+
+## Responding to the survey
+
+The survey is ready.
+
+.pull-left[
+Preview it 
+![google form preview survey button highlighted](pics/gform_preview.png)
+]
+--
+.pull-right[
+Submit several responses. You will need responses to plot later.
+![google survey showing a response](pics/gform_respond.png)
+
+]
 ---
 # Workflow | Steps
 
